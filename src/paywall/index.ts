@@ -1,16 +1,16 @@
 import { createMiddleware } from 'hono/factory';
-import { createPublicClient, http, parseEther, isAddress, type Hash, type Address } from 'viem';
+import { createPublicClient, http, parseEther, isAddress, type Hash } from 'viem';
 import { baseSepolia } from 'viem/chains';
 
 export interface X402PaywallOptions {
-  priceEth: string; // e.g. "0.0001" (Base Sepolia ETH)
+  priceEth: string;
   recipientWallet: `0x${string}`;
   rpcUrl?: string;
-  mockBypassHeader?: string; // Optional secret header for local mock tests without testnet funds
+  mockBypassHeader?: string;
 }
 
 export function x402Paywall(options: X402PaywallOptions) {
-  if (!isAddress(options.recipientWallet)) {
+  if (!isAddress(options.recipientWallet, { strict: false })) {
     throw new Error(`Invalid recipient wallet address: ${options.recipientWallet}`);
   }
 
