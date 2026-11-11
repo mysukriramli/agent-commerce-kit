@@ -1,5 +1,11 @@
 import { z } from 'zod';
 import nacl from 'tweetnacl';
+import { createHash } from 'node:crypto';
+
+export interface KeyPair {
+  publicKey: Uint8Array;
+  secretKey: Uint8Array;
+}
 
 export interface EscrowVerificationParams<T> {
   promptId: string;
@@ -7,7 +13,7 @@ export interface EscrowVerificationParams<T> {
   schema: z.ZodSchema<T>;
   maxLatencyMs: number;
   actualLatencyMs: number;
-  signingKeyPair: nacl.SignKeyPair;
+  signingKeyPair: KeyPair;
 }
 
 export interface JsonLdAuditRecord {
@@ -31,13 +37,8 @@ export interface EscrowReleaseResult<T> {
 }
 
 export class DeliverableEscrowEngine {
-  private static async sha256Hex(data: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const bytes = encoder.encode(data);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
-    return Array.from(new Uint8Array(hashBuffer))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+  private static sha256Hex(data: string): string {
+    return createHash('sha256').update(data).digest('hex');
   }
 
   private static toHex(bytes: Uint8Array): string {
@@ -50,7 +51,7 @@ export class DeliverableEscrowEngine {
     params: EscrowVerificationParams<T>
   ): Promise<EscrowReleaseResult<T>> {
     const serializedDeliverable = JSON.stringify(params.deliverable ?? {});
-    const deliverableHash = await this.sha256Hex(serializedDeliverable);
+    const deliverableHash = this.sha256Hex(serializedDeliverable);
 
     // 1. Check Latency SLA
     if (params.actualLatencyMs > params.maxLatencyMs) {
@@ -115,7 +116,7 @@ export class DeliverableEscrowEngine {
     };
   }
 
-  public static generateKeyPair(): nacl.SignKeyPair {
+  public static generateKeyPair(): KeyPair {
     return nacl.sign.keyPair();
   }
 }
