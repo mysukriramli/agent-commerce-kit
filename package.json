@@ -1,0 +1,33 @@
+{
+  "name": "agent-commerce-kit",
+  "version": "1.0.0",
+  "description": "Unified autonomous agent commerce engine: Spend-Guard, Escrow Verifier, and x402 Paywall",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "ai-agents",
+    "x402",
+    "agentic-commerce",
+    "paywall",
+    "escrow",
+    "spend-guard"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.6.14",
+    "tweetnacl": "^1.0.3",
+    "viem": "^2.21.55",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
